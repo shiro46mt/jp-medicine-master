@@ -1,3 +1,7 @@
+[![pytest](https://github.com/shiro46mt/jp-medicine-master/actions/workflows/pytest.yml/badge.svg)](https://github.com/shiro46mt/jp-medicine-master/actions/workflows/pytest.yml)
+![GitHub License](https://img.shields.io/github/license/shiro46mt/jp-medicine-master)
+[![PyPI - Version](https://img.shields.io/pypi/v/jp-medicine-master)](https://pypi.org/project/jp-medicine-master/)
+
 # jp-medicine-master
 日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ
 
