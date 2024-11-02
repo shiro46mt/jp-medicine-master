@@ -1,6 +1,6 @@
 [project]
 name = "jp_medicine_master"
-version = "1.0.20240906"
+version = "1.1.20240906"
 description = "日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
   "bs4",
+  "openpyxl",
   "pandas",
   "requests",
 ]
