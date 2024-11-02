@@ -1,0 +1,25 @@
+[project]
+name = "jp_medicine_master"
+version = "1.0.20240906"
+description = "日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [
+  {name = "SHIRO", email = "shiro46mt@gmail.com"}
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Natural Language :: Japanese",
+]
+dependencies = [
+  "bs4",
+  "pandas",
+  "requests",
+]
+
+[project.urls]
+Repository = "https://github.com/shiro46mt/jp-medicine-master.git"
