@@ -23,7 +23,7 @@ def get_url_ssk(year: Optional[int] = None, *, verbose: bool = False) -> Union[s
         2024: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r06/kihonmasta_04.html",
         2022: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r04/kihonmasta_04.html",
         2020: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r02/kihonmasta_04.html",
-        2019: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r01/kihonmasta_04.html",
+        2019: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r01/kihonmasta_04.html",  # 2019-10-01から適用
         2018: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/h30/kihonmasta_04.html",
         2016: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/h28/kihonmasta_04.html",
         2014: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/h26/kihonmasta_04.html",
@@ -34,6 +34,8 @@ def get_url_ssk(year: Optional[int] = None, *, verbose: bool = False) -> Union[s
     if year:
         if year not in urls:
             raise ValueError(f"{year} is not a valid value for year; supported values are {', '.join(urls.keys())}")
+        if year == 2019:
+            logger.warning('`year=2019` の医薬品マスタは、2019年10月の消費税率引上げによる改定後のマスタです。2019年9月までのマスタは `year=2018` を参照してください。')
         return urls[year]
     else:
         year = max(urls)
@@ -50,12 +52,20 @@ def get_url_mhlw(year: Optional[int] = None, *, verbose: bool = False) -> Union[
     urls = {
         2024: "https://www.mhlw.go.jp/topics/2024/04/tp20240401-01.html",
         2023: "https://www.mhlw.go.jp/topics/2023/04/tp20230401-01.html",
+        2022: "https://www.mhlw.go.jp/topics/2022/04/tp20220401-01.html",
+        2021: "https://www.mhlw.go.jp/topics/2021/04/tp20210401-01.html",
+        2020: "https://www.mhlw.go.jp/topics/2020/04/tp20200401-01.html",
+        2019: "https://www.mhlw.go.jp/topics/2019/08/tp20190819-01.html",  # 2019-10-01から適用
+        2018: "https://www.mhlw.go.jp/topics/2018/04/tp20180401-01.html",
+        2016: "https://www.mhlw.go.jp/topics/2016/04/tp20160401-01.html",
     }
     if verbose:
         return urls
     if year:
         if year not in urls:
             raise ValueError(f"{year} is not a valid value for year; supported values are {', '.join(urls.keys())}")
+        if year == 2019:
+            logger.warning('`year=2019` の医薬品マスタは、2019年10月の消費税率引上げによる改定後のマスタです。2019年9月までのマスタは `year=2018` を参照してください。')
         return urls[year]
     else:
         year = max(urls)

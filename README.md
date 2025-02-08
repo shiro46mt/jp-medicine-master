@@ -20,6 +20,13 @@
     出典: 厚生労働省「薬価基準収載品目リスト及び後発医薬品に関する情報について」
     https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000078916.html
 
+> [!TIP]
+> 最新年度のマスタが取得できない場合、ライブラリのアップデートをお試しください。
+> ```
+> pip install --upgrade jp-medicine-master
+> ```
+> それでも取得できない場合はissueなどでお知らせいただけると非常に光栄です。
+
 # インストール方法
 ```
 pip install jp-medicine-master
@@ -30,34 +37,55 @@ pip install jp-medicine-master
 import jp_medicine_master as jpmed
 ```
 
-各マスタについて、csvとして保存する関数（download_xxx）と pandasのDataFrameとして読み込む関数（read_xxx）がある。
+各マスタについて、2種類の関数が実装されています。read_xxx系の関数でも、引数save_dirを渡せば DataFrameとして読み込みつつcsvとして保存することも可能です。
+
+* csvとして保存する関数（download_xxx）
+* pandasのDataFrameとして読み込む関数（read_xxx）
+
+どちらの関数も、引数`year`を指定することで過去のバージョンを取得できます。
+
+> [!TIP]
+> 2019年度の医薬品マスタは、2019年10月の消費税率引上げによる改定後のマスタです。
+> 2019年9月までのマスタは `year=2018` を参照してください。
 
 
 **レセプト電算処理システム用医薬品マスタ**
+
+対応年度: 2012, 2014, 2016, 2018, 2019, 2020, 2022, 2024 (version>=1.2)
+
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_ssk_y(save_dir)  # /path/to/directory/y_ALL20241205.csv
+filepath = jpmed.download_ssk_y(save_dir)
+print(filepath)  # /path/to/directory/y_ALL20241205.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_ssk_y()
 ```
 
 **薬価基準収載医薬品**
+
+対応年度: 2016, 2018, 2019, 2020, 2022, 2024 (version>=1.3)
+
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_mhlw_price(save_dir)  # /path/to/directory/tp20241206-01.csv
+filepath = jpmed.download_mhlw_price(save_dir)
+print(filepath)  # /path/to/directory/tp20241206-01.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_mhlw_price()
 ```
 
 **後発医薬品に関する情報**
+
+対応年度: 2016, 2018, 2019, 2020, 2022, 2024 (version>=1.3)
+
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_mhlw_ge(save_dir)  # /path/to/directory/tp20241206-01_05.csv
+filepath = jpmed.download_mhlw_ge(save_dir)
+print(filepath)  # /path/to/directory/tp20241206-01_05.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_mhlw_ge()
