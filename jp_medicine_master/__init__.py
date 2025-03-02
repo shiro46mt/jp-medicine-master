@@ -6,3 +6,6 @@ from ._ import (
     read_mhlw_price, download_mhlw_price,
     read_mhlw_ge, download_mhlw_ge,
 )
+from .ag import (
+    read_ag, download_ag
+)
