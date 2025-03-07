@@ -1,5 +1,6 @@
 from logging import getLogger
 import os
+import re
 from typing import Union, Optional, Dict
 
 import pandas as pd
@@ -19,6 +20,7 @@ def _get_url_mhlw(year: Optional[int] = None, *, verbose: bool = False) -> Union
         verbose: Trueを指定した場合、リンクの一覧をdictとして返す。
     """
     urls = {
+        2025: "https://www.mhlw.go.jp/topics/2025/04/tp20250401-01.html",
         2024: "https://www.mhlw.go.jp/topics/2024/04/tp20240401-01.html",
         2023: "https://www.mhlw.go.jp/topics/2023/04/tp20230401-01.html",
         2022: "https://www.mhlw.go.jp/topics/2022/04/tp20220401-01.html",
@@ -117,7 +119,7 @@ def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] =
     soup = MasterDownloader.get(url)
 
     links = soup.select('#contents .ico-excel a')
-    links = [link for link in links if link.attrs['href'].endswith('_05.xlsx')]  # ファイル名の形式でフィルター
+    links = [link for link in links if re.search(r'_0?5.xlsx?$', link.attrs['href'])]  # ファイル名の形式でフィルター
     base_url = 'https://www.mhlw.go.jp'
     download_url = base_url + '/' + links[0].attrs['href']
 
@@ -155,4 +157,4 @@ def read_mhlw_ge(*, year: Optional[int] = None, save_dir: Optional[Union[str, os
 #
 def get_years_mhlw():
     """`year` に指定できる年度の一覧。"""
-    return list(sorted(_get_url_mhlw(verbose=True).keys))
+    return list(sorted(_get_url_mhlw(verbose=True).keys()))

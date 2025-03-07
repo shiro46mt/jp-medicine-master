@@ -92,4 +92,4 @@ def read_ssk_y(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.P
 
 def get_years_ssk():
     """`year` に指定できる年度の一覧。"""
-    return list(sorted(_get_url_ssk(verbose=True).keys))
+    return list(sorted(_get_url_ssk(verbose=True).keys()))

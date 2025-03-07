@@ -4,8 +4,8 @@ from jp_medicine_master.mhlw import _get_url_mhlw
 
 
 def test_get_url_mhlw():
-    # 最新年度 == 2024
-    assert _get_url_mhlw() == _get_url_mhlw(2024)
+    # 最新年度 == 2025
+    assert _get_url_mhlw() == _get_url_mhlw(2025)
 
 
 def test_read_mhlw_price():
