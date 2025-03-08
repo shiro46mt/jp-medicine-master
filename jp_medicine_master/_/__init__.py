@@ -21,6 +21,7 @@ class MasterDownloader:
     def get(self, url: str) -> BeautifulSoup:
         """urlへのHTTPアクセス"""
         html = requests.get(url, timeout=timeout_sec, headers=headers)
+        html.raise_for_status()
         soup = BeautifulSoup(html.text, 'html.parser')
         return soup
 
@@ -64,7 +65,7 @@ class MasterDownloader:
         return files[0]
 
     @classmethod
-    def read(self, download_func, year: Optional[int] = None, save_dir: Union[str, os.PathLike, None] = None, numeric_cols: List[str] = []):
+    def read(self, download_func, year: Optional[int] = None, save_dir: Union[str, os.PathLike, None] = None, numeric_cols: List[str] = [], file_info=False):
         """対象ファイルをホームディレクトリにダウンロード -> pandas.DataFrameとして読み込み -> ダウンロードファイルを削除"""
         # 保存先フォルダ
         if save_dir is None:
@@ -74,7 +75,7 @@ class MasterDownloader:
             delete_csv = True
 
         # 対象ファイルのダウンロード
-        filepath = download_func(save_dir, year=year, delete_tmp=True)
+        filepath = download_func(save_dir, year=year, file_info=file_info, delete_tmp=True)
 
         # 読み込み
         df = pd.read_csv(filepath, dtype=str, encoding='utf8')

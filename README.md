@@ -31,6 +31,13 @@
     出典: 日経メディカル処方薬事典｜AG（オーソライズドジェネリック）一覧
     https://medical.nikkeibp.co.jp/inc/all/drugdic/ag/index.html
 
+- **BS（バイオシミラー）一覧**
+
+    後発医薬品に関する情報からBSの一覧を取得し、レセ電システム用医薬品マスターと突合して各種コードを付与したマスタです。(version>=1.4)
+
+    対応年度: 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+
+
 > [!TIP]
 >
 > 最新年度のマスタが取得できない場合、ライブラリのアップデートをお試しください。
@@ -58,6 +65,7 @@ import jp_medicine_master as jpmed
 - レセプト電算処理システム用医薬品マスター
 - 薬価基準収載医薬品
 - 後発医薬品に関する情報
+- BS（バイオシミラー）一覧
 
 > [!TIP]
 >
@@ -111,6 +119,18 @@ print(filepath)  # /path/to/directory/ag_20250203.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_ag()
+```
+
+**BS（バイオシミラー）一覧**
+
+```
+# csvとして保存する場合
+save_dir = '/path/to/directory'
+filepath = jpmed.download_bs(save_dir)
+print(filepath)  # /path/to/directory/bs_20250203.csv
+
+# pandasのDataFrameとして読み込む場合
+df = jpmed.read_bs()
 ```
 
 # License

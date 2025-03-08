@@ -22,6 +22,17 @@ def test_read_mhlw_price():
     assert set(df['区分'].unique()) == set(['内用薬', '注射薬', '外用薬', '歯科用薬剤'])
 
 
+def test_read_mhlw_price_with_file_info():
+    df = jpmed.read_mhlw_price(file_info=True)
+
+    # ヘッダー行
+    assert len(df.columns) == 16
+    assert df.columns[-1] == 'file'
+
+    # file
+    assert df['file'].nunique() == 4
+
+
 def test_read_mhlw_ge():
     df = jpmed.read_mhlw_ge()
 
@@ -31,3 +42,11 @@ def test_read_mhlw_ge():
 
     # 行数 ~ 13,000
     assert 11_000 <= len(df) <= 15_000
+
+
+def test_read_mhlw_ge_with_file_info():
+    df = jpmed.read_mhlw_ge(file_info=True)
+
+    # ヘッダー行
+    assert len(df.columns) == 10
+    assert df.columns[-1] == 'file'

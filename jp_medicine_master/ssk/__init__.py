@@ -45,12 +45,13 @@ def _get_url_ssk(year: Optional[int] = None, *, verbose: bool = False) -> Union[
 #
 # メイン関数
 #
-def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, delete_tmp=True) -> str:
+def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
     """支払基金HPから、医薬品マスターの一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
 
     Args:
         save_dir: 保存先フォルダ
         year: マスタの公開年度。指定しない場合は最新年度。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
         delete_tmp: Falseを指定した場合、ダウンロードした一時ファイル (.zip) を残す。
 
     Return:
@@ -69,25 +70,32 @@ def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = N
 
     # ヘッダ行の追加
     filepath_header = Path(__file__).parent / 'ssk_y_header.csv'
-    df1 = pd.read_csv(filepath_header, dtype=str, encoding='utf8')
-    cols = df1.columns
-    df2 = pd.read_csv(filepath, dtype=str, encoding='cp932', names=cols)
-    df2.to_csv(filepath, index=False, encoding='utf8')
+    df_header = pd.read_csv(filepath_header, dtype=str, encoding='utf8')
+    cols = df_header.columns
+    df = pd.read_csv(filepath, dtype=str, encoding='cp932', names=cols)
+
+    # 元ファイルの情報
+    if file_info:
+        df['file'] = filepath.stem
+
+    df.to_csv(filepath, index=False, encoding='utf8')
 
     return str(filepath)
 
 
-def read_ssk_y(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None) -> pd.DataFrame:
+def read_ssk_y(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
     """支払基金HPから、医薬品マスターを取得する。
 
     Args:
         year: マスタの公開年度。指定しない場合は最新年度。
         save_dir: 指定した場合、取得したマスタを `save_dir`にcsv形式 (UTF-8) で保存する。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
 
     Return:
         `pd.DataFrame`
     """
-    return MasterDownloader.read(download_ssk_y, year=year, save_dir=save_dir, numeric_cols=['医薬品名・規格名漢字有効桁数', '医薬品名・規格名カナ有効桁数', '単位漢字有効桁数', '新又は現金額', '旧金額'])
+    numeric_cols=['医薬品名・規格名漢字有効桁数', '医薬品名・規格名カナ有効桁数', '単位漢字有効桁数', '新又は現金額', '旧金額']
+    return MasterDownloader.read(download_ssk_y, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
 
 
 def get_years_ssk():

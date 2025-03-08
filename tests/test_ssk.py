@@ -17,3 +17,11 @@ def test_read_ssk_y():
 
     # 行数 ~ 20,000
     assert 18_000 <= len(df) <= 22_000
+
+
+def test_read_ssk_y_with_file_info():
+    df = jpmed.read_ssk_y(file_info=True)
+
+    # ヘッダー行
+    assert len(df.columns) == 43
+    assert df.columns[-1] == 'file'
