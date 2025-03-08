@@ -1,4 +1,4 @@
-__version__ = '1.4'
+__version__ = '1.4.1'
 
 from .ssk import (
     read_ssk_y, download_ssk_y,

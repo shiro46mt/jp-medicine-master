@@ -1,6 +1,6 @@
 [project]
 name = "jp_medicine_master"
-version = "1.4"
+version = "1.4.1"
 description = "日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ"
 readme = "README.md"
 requires-python = ">=3.8"
