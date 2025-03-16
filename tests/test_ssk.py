@@ -1,6 +1,7 @@
 import pytest
 import jp_medicine_master as jpmed
 from jp_medicine_master.ssk import _get_url_ssk
+from jp_medicine_master._ import MasterDownloader
 
 
 def test_get_url_ssk():
@@ -8,6 +9,17 @@ def test_get_url_ssk():
     assert _get_url_ssk() == _get_url_ssk(2024)
 
 
+def test_get_url_ssk_verbose():
+    urls = _get_url_ssk(verbose=True)
+
+    for year, url in urls.items():
+        soup = MasterDownloader.get(url)
+        assert soup is not None
+
+
+#
+# 医薬品マスター
+#
 def test_read_ssk_y():
     df = jpmed.read_ssk_y()
 

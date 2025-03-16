@@ -1,6 +1,7 @@
 import pytest
 import jp_medicine_master as jpmed
 from jp_medicine_master.mhlw import _get_url_mhlw
+from jp_medicine_master._ import MasterDownloader
 
 
 def test_get_url_mhlw():
@@ -8,6 +9,17 @@ def test_get_url_mhlw():
     assert _get_url_mhlw() == _get_url_mhlw(2025)
 
 
+def test_get_url_mhlw_verbose():
+    urls = _get_url_mhlw(verbose=True)
+
+    for year, url in urls.items():
+        soup = MasterDownloader.get(url)
+        assert soup is not None
+
+
+#
+# 厚労省 薬価 (mhlw_price)
+#
 def test_read_mhlw_price():
     df = jpmed.read_mhlw_price()
 
@@ -33,6 +45,9 @@ def test_read_mhlw_price_with_file_info():
     assert df['file'].nunique() == 4
 
 
+#
+# 厚労省 後発医薬品 (mhlw_ge)
+#
 def test_read_mhlw_ge():
     df = jpmed.read_mhlw_ge()
 
