@@ -66,8 +66,10 @@ def download_mhlw_price(save_dir: Union[str, os.PathLike], *, year: Optional[int
     soup = MasterDownloader.get(url)
 
     links = soup.select('#contents .ico-excel a')
-    base_url = 'https://www.mhlw.go.jp'
-    download_urls = [base_url + '/' + link.attrs['href'] for link in links[:4]]
+    base_url = 'https://www.mhlw.go.jp/'
+    if year == 2023:
+        base_url = 'https://warp.da.ndl.go.jp'
+    download_urls = [base_url + link.attrs['href'] for link in links[:4]]
 
     # ファイルの保存
     files = []
@@ -134,8 +136,10 @@ def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] =
 
     links = soup.select('#contents .ico-excel a')
     links = [link for link in links if re.search(r'_0?5.xlsx?$', link.attrs['href'])]  # ファイル名の形式でフィルター
-    base_url = 'https://www.mhlw.go.jp'
-    download_url = base_url + '/' + links[0].attrs['href']
+    base_url = 'https://www.mhlw.go.jp/'
+    if year == 2023:
+        base_url = 'https://warp.da.ndl.go.jp'
+    download_url = base_url + links[0].attrs['href']
 
     # ファイルの保存
     filepath = MasterDownloader.fetch_file(download_url, save_dir)
