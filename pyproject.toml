@@ -1,6 +1,6 @@
 [project]
 name = "jp_medicine_master"
-version = "1.4.2"
+version = "1.4.3"
 description = "日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -16,7 +16,7 @@ classifiers = [
   "Natural Language :: Japanese",
 ]
 dependencies = [
-  "bs4",
+  "beautifulsoup4",
   "openpyxl",
   "pandas",
   "requests",
