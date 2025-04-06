@@ -50,7 +50,7 @@ pip install jp-medicine-master
 ```
 
 # 使用方法
-```
+```python
 import jp_medicine_master as jpmed
 ```
 
@@ -73,7 +73,7 @@ import jp_medicine_master as jpmed
 
 **レセプト電算処理システム用医薬品マスタ**
 
-```
+```python
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_y(save_dir)
@@ -85,7 +85,7 @@ df = jpmed.read_y()
 
 **薬価基準収載医薬品**
 
-```
+```python
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_price(save_dir)
@@ -97,7 +97,7 @@ df = jpmed.read_price()
 
 **後発医薬品に関する情報**
 
-```
+```python
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_ge(save_dir)
@@ -109,7 +109,7 @@ df = jpmed.read_ge()
 
 **AG（オーソライズド・ジェネリック）一覧**
 
-```
+```python
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_ag(save_dir)
@@ -121,7 +121,7 @@ df = jpmed.read_ag()
 
 **BS（バイオシミラー）一覧**
 
-```
+```python
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_bs(save_dir)
