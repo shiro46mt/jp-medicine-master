@@ -2,8 +2,10 @@ from logging import getLogger
 import os
 import re
 from typing import Union, Optional, Dict
+from urllib.parse import urljoin
 
 import pandas as pd
+from typing_extensions import deprecated
 
 from .._ import MasterDownloader
 
@@ -47,9 +49,9 @@ def _get_url_mhlw(year: Optional[int] = None, *, verbose: bool = False) -> Union
 
 
 #
-# メイン関数 | 厚労省 薬価 (mhlw_price)
+# メイン関数 | 厚労省 薬価 (price)
 #
-def download_mhlw_price(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
+def download_price(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
     """厚労省HPから、(1)-(4)薬価基準収載品目リストの一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
 
     Args:
@@ -66,10 +68,7 @@ def download_mhlw_price(save_dir: Union[str, os.PathLike], *, year: Optional[int
     soup = MasterDownloader.get(url)
 
     links = soup.select('#contents .ico-excel a')
-    base_url = 'https://www.mhlw.go.jp/'
-    if year == 2023:
-        base_url = 'https://warp.da.ndl.go.jp'
-    download_urls = [base_url + link.attrs['href'] for link in links[:4]]
+    download_urls = [urljoin(url, link.attrs['href'] )for link in links[:4]]
 
     # ファイルの保存
     files = []
@@ -100,7 +99,7 @@ def download_mhlw_price(save_dir: Union[str, os.PathLike], *, year: Optional[int
     return str(filepath_new)
 
 
-def read_mhlw_price(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
+def read_price(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
     """厚労省HPから、(1)-(4)薬価基準収載品目リストを取得する。
 
     Args:
@@ -112,13 +111,18 @@ def read_mhlw_price(*, year: Optional[int] = None, save_dir: Optional[Union[str,
         `pd.DataFrame`
     """
     numeric_cols = ['薬価']
-    return MasterDownloader.read(download_mhlw_price, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
+    return MasterDownloader.read(download_price, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
+
+
+def get_years_price():
+    """`year` に指定できる年度の一覧。"""
+    return list(sorted(_get_url_mhlw(verbose=True).keys()))
 
 
 #
-# メイン関数 | 厚労省 後発医薬品 (mhlw_ge)
+# メイン関数 | 厚労省 後発医薬品 (ge)
 #
-def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
+def download_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
     """厚労省HPから、(5)後発医薬品に関する情報の一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
 
     Args:
@@ -136,10 +140,7 @@ def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] =
 
     links = soup.select('#contents .ico-excel a')
     links = [link for link in links if re.search(r'_0?5.xlsx?$', link.attrs['href'])]  # ファイル名の形式でフィルター
-    base_url = 'https://www.mhlw.go.jp/'
-    if year == 2023:
-        base_url = 'https://warp.da.ndl.go.jp'
-    download_url = base_url + links[0].attrs['href']
+    download_url = urljoin(url, links[0].attrs['href'])
 
     # ファイルの保存
     filepath = MasterDownloader.fetch_file(download_url, save_dir)
@@ -163,7 +164,7 @@ def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] =
     return str(filepath_new)
 
 
-def read_mhlw_ge(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
+def read_ge(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
     """厚労省HPから、(5)後発医薬品に関する情報を取得する。
 
     Args:
@@ -175,12 +176,74 @@ def read_mhlw_ge(*, year: Optional[int] = None, save_dir: Optional[Union[str, os
         `pd.DataFrame`
     """
     numeric_cols = []
-    return MasterDownloader.read(download_mhlw_ge, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
+    return MasterDownloader.read(download_ge, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
 
 
-#
-# メイン関数 | 共通
-#
-def get_years_mhlw():
+def get_years_ge():
     """`year` に指定できる年度の一覧。"""
     return list(sorted(_get_url_mhlw(verbose=True).keys()))
+
+
+#
+# 互換性のためのエイリアス
+#
+@deprecated('Use `download_price` instead')
+def download_mhlw_price(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
+    """厚労省HPから、(1)-(4)薬価基準収載品目リストの一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
+
+    Args:
+        save_dir: 保存先フォルダ
+        year: マスタの公開年度。指定しない場合は最新年度。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
+        delete_tmp: Falseを指定した場合、ダウンロードした一時ファイル (.xlsx) を残す。
+
+    Return:
+        保存先ファイルパス (str)
+    """
+    return download_price(save_dir=save_dir, year=year, file_info=file_info, delete_tmp=delete_tmp)
+
+
+@deprecated('Use `read_price` instead')
+def read_mhlw_price(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
+    """厚労省HPから、(1)-(4)薬価基準収載品目リストを取得する。
+
+    Args:
+        year: マスタの公開年度。指定しない場合は最新年度。
+        save_dir: 指定した場合、取得したマスタを `save_dir`にcsv形式 (UTF-8) で保存する。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
+
+    Return:
+        `pd.DataFrame`
+    """
+    return read_price(year=year, save_dir=save_dir, file_info=file_info)
+
+
+@deprecated('Use `download_ge` instead')
+def download_mhlw_ge(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
+    """厚労省HPから、(5)後発医薬品に関する情報の一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
+
+    Args:
+        save_dir: 保存先フォルダ
+        year: マスタの公開年度。指定しない場合は最新年度。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
+        delete_tmp: Falseを指定した場合、ダウンロードした一時ファイル (.xlsx) を残す。
+
+    Return:
+        保存先ファイルパス (str)
+    """
+    return download_ge(save_dir=save_dir, year=year, file_info=file_info, delete_tmp=delete_tmp)
+
+
+@deprecated('Use `read_ge` instead')
+def read_mhlw_ge(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
+    """厚労省HPから、(5)後発医薬品に関する情報を取得する。
+
+    Args:
+        year: マスタの公開年度。指定しない場合は最新年度。
+        save_dir: 指定した場合、取得したマスタを `save_dir`にcsv形式 (UTF-8) で保存する。
+        file_info: Trueを指定した場合、DataFrameの末尾に`file`列を追加し、元ファイルの名前を表示する。
+
+    Return:
+        `pd.DataFrame`
+    """
+    return read_ge(year=year, save_dir=save_dir, file_info=file_info)

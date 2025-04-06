@@ -7,7 +7,7 @@ import unicodedata
 
 import pandas as pd
 
-from ..  import read_ssk_y, read_mhlw_ge
+from ..  import read_y, read_ge, get_years_y, get_years_ge
 
 # ログ設定
 logger = getLogger(__name__)
@@ -15,9 +15,13 @@ logger = getLogger(__name__)
 
 def _get_bs_master(*, year: Optional[int] = None):
     """後発医薬品に関する情報を参照してBS一覧を作成し、最新の医薬品マスター（支払基金）と突合する。"""
+    if year:
+        available_years = get_years_bs()
+        if year not in available_years:
+            raise ValueError(f"{year} is not a valid value for year; supported values are {', '.join(available_years.keys())}")
 
     # 後発医薬品に関する情報
-    ge = read_mhlw_ge(year=year, file_info=True)
+    ge = read_ge(year=year, file_info=True)
     update = re.findall(r'tp(\d{8})', ge['file'].to_list()[0])[0]
 
     # バイオ医薬品の抽出
@@ -33,7 +37,7 @@ def _get_bs_master(*, year: Optional[int] = None):
     ge = ge[ge['BS区分'].notna()]
 
     # 医薬品マスター（支払基金）と突合
-    y = read_ssk_y(year=year)
+    y = read_y(year=year)
     master = (
         y[['医薬品コード', '薬価基準収載医薬品コード', '基本漢字名称']]
         .merge(
@@ -54,7 +58,7 @@ def _save_csv(df, save_dir: Union[str, os.PathLike], update: str) -> str:
         raise FileNotFoundError("No such directory: '%s'", save_dir)
 
     # ファイルの保存
-    filepath = save_dir / f"BS一覧_{update}.csv"
+    filepath = save_dir / f"BS_{update}.csv"
     df.to_csv(filepath, index=False, encoding='utf8')
 
     return str(filepath)
@@ -98,3 +102,10 @@ def read_bs(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.Path
         _save_csv(df, save_dir, update)
 
     return df
+
+
+def get_years_bs():
+    """`year` に指定できる年度の一覧。"""
+    years_y = get_years_y()
+    years_ge = get_years_ge()
+    return [year for year in years_y if year in years_ge]

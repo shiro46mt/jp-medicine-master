@@ -9,17 +9,15 @@
 ## 利用可能な医薬品マスタ
 - **レセプト電算処理システム用医薬品マスター**
 
-    対応年度: 2012, 2014, 2016, 2018, 2019, 2020, 2022, 2024 (version>=1.2)
+    対応年度: 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 (version>=1.5)
 
-    出典: 社会保険診療報酬支払基金「基本マスター」
-    https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/index.html
-
-    🎉令和6年7月12日掲載[「医薬品マスターのレイアウト変更について」](https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r06kaiteijoho.files/r06kaitei_20240712.pdf)に対応。
+    出典: 診療報酬情報提供サービス
+    https://shinryohoshu.mhlw.go.jp/shinryohoshu/
 
 - **薬価基準収載医薬品**
 - **後発医薬品に関する情報**
 
-    対応年度: 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024 (version>=1.3) 2025 (version>=1.4)
+    対応年度: 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 (version>=1.4)
 
     出典: 厚生労働省「薬価基準収載品目リスト及び後発医薬品に関する情報について」
     https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000078916.html
@@ -78,11 +76,11 @@ import jp_medicine_master as jpmed
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_ssk_y(save_dir)
-print(filepath)  # /path/to/directory/y_ALL20241205.csv
+filepath = jpmed.download_y(save_dir)
+print(filepath)  # /path/to/directory/y_20250318.csv
 
 # pandasのDataFrameとして読み込む場合
-df = jpmed.read_ssk_y()
+df = jpmed.read_y()
 ```
 
 **薬価基準収載医薬品**
@@ -90,11 +88,11 @@ df = jpmed.read_ssk_y()
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_mhlw_price(save_dir)
-print(filepath)  # /path/to/directory/tp20241206-01.csv
+filepath = jpmed.download_price(save_dir)
+print(filepath)  # /path/to/directory/tp20250401-01.csv
 
 # pandasのDataFrameとして読み込む場合
-df = jpmed.read_mhlw_price()
+df = jpmed.read_price()
 ```
 
 **後発医薬品に関する情報**
@@ -102,11 +100,11 @@ df = jpmed.read_mhlw_price()
 ```
 # csvとして保存する場合
 save_dir = '/path/to/directory'
-filepath = jpmed.download_mhlw_ge(save_dir)
-print(filepath)  # /path/to/directory/tp20241206-01_05.csv
+filepath = jpmed.download_ge(save_dir)
+print(filepath)  # /path/to/directory/tp20250401-01_05.csv
 
 # pandasのDataFrameとして読み込む場合
-df = jpmed.read_mhlw_ge()
+df = jpmed.read_ge()
 ```
 
 **AG（オーソライズド・ジェネリック）一覧**
@@ -115,7 +113,7 @@ df = jpmed.read_mhlw_ge()
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_ag(save_dir)
-print(filepath)  # /path/to/directory/ag_20250203.csv
+print(filepath)  # /path/to/directory/AG_20250203.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_ag()
@@ -127,7 +125,7 @@ df = jpmed.read_ag()
 # csvとして保存する場合
 save_dir = '/path/to/directory'
 filepath = jpmed.download_bs(save_dir)
-print(filepath)  # /path/to/directory/bs_20250203.csv
+print(filepath)  # /path/to/directory/BS_20250401.csv
 
 # pandasのDataFrameとして読み込む場合
 df = jpmed.read_bs()

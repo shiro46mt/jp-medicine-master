@@ -1,5 +1,18 @@
+from pathlib import Path
+
 import pytest
 import jp_medicine_master as jpmed
+
+
+def test_download_bs_all():
+    save_dir = Path.home() / '.jp_medicine_master'
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    years = jpmed.get_years_bs()
+    for year in years:
+        filepath = jpmed.download_bs(save_dir=save_dir, year=year)
+        assert filepath
 
 
 def test_read_bs():

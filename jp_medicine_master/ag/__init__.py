@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
-from ..  import read_ssk_y
+from .. import read_y
 
 # ログ設定
 logger = getLogger(__name__)
@@ -56,7 +56,7 @@ def _get_ag_master():
     items, update = _get()
 
     # 医薬品マスタ（支払基金）
-    master = read_ssk_y()[['医薬品コード', '薬価基準収載医薬品コード', '基本漢字名称']]
+    master = read_y()[['医薬品コード', '薬価基準収載医薬品コード', '基本漢字名称']]
     master.index = master['基本漢字名称'].apply(_normalize)
 
     # AG区分
@@ -102,7 +102,7 @@ def _save_csv(df, save_dir: Union[str, os.PathLike], update: str) -> str:
         raise FileNotFoundError("No such directory: '%s'", save_dir)
 
     # ファイルの保存
-    filepath = save_dir / f"AG一覧_{update}.csv"
+    filepath = save_dir / f"AG_{update}.csv"
     df.to_csv(filepath, index=False, encoding='utf8')
 
     return str(filepath)

@@ -22,11 +22,11 @@ class MasterDownloader:
         """urlへのHTTPアクセス"""
         html = requests.get(url, timeout=timeout_sec, headers=headers)
         html.raise_for_status()
-        soup = BeautifulSoup(html.text, 'html.parser')
+        soup = BeautifulSoup(html.content, 'html.parser')
         return soup
 
     @classmethod
-    def fetch_file(self, download_url: str, save_dir: Union[str, os.PathLike], *, delete_tmp=True) -> Path:
+    def fetch_file(self, download_url: str, save_dir: Union[str, os.PathLike], *, delete_tmp=True, outfile_name: str = None) -> Path:
         """download_urlのファイルをダウンロード -> zipの場合は解凍 -> ファイルを保存 -> ファイルパスを返す"""
         # 保存先フォルダ
         if isinstance(save_dir, str):
@@ -46,7 +46,7 @@ class MasterDownloader:
             zf.write(r.content)
 
         # 拡張子が.zipでない場合は終了
-        if filepath.suffix != '.zip':
+        if filepath.suffix != '.zip' and filepath.suffix != '':
             return filepath
 
         # zip解凍
@@ -56,8 +56,15 @@ class MasterDownloader:
                 info.filename = info.orig_filename.encode('cp437').decode('cp932')
                 if os.sep != "/" and os.sep in info.filename:
                     info.filename = info.filename.replace(os.sep, "/")
-                tmp = zf.extract(info, save_dir)
-                files.append(Path(tmp))
+                if any([info.filename.endswith(ext) for ext in ('.csv', 'xlsx', '.xls')]):
+                    # 階層構造を解除してフラットにする
+                    if "/" in info.filename:
+                        info.filename = info.filename.split("/")[-1]
+                    # outfile_name があれば名前を矯正
+                    if outfile_name:
+                        info.filename = outfile_name
+                    tmp = zf.extract(info, save_dir)
+                    files.append(Path(tmp))
         # zip削除
         if delete_tmp:
             filepath.unlink()

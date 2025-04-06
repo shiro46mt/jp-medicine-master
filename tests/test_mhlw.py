@@ -1,27 +1,25 @@
+from pathlib import Path
+
 import pytest
 import jp_medicine_master as jpmed
-from jp_medicine_master.mhlw import _get_url_mhlw
-from jp_medicine_master._ import MasterDownloader
-
-
-def test_get_url_mhlw():
-    # 最新年度 == 2025
-    assert _get_url_mhlw() == _get_url_mhlw(2025)
-
-
-def test_get_url_mhlw_verbose():
-    urls = _get_url_mhlw(verbose=True)
-
-    for year, url in urls.items():
-        soup = MasterDownloader.get(url)
-        assert soup is not None
 
 
 #
-# 厚労省 薬価 (mhlw_price)
+# 厚労省 薬価 (price)
 #
-def test_read_mhlw_price():
-    df = jpmed.read_mhlw_price()
+def test_download_price_all():
+    save_dir = Path.home() / '.jp_medicine_master'
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    years = jpmed.get_years_price()
+    for year in years:
+        filepath = jpmed.download_price(save_dir=save_dir, year=year)
+        assert filepath
+
+
+def test_read_price():
+    df = jpmed.read_price()
 
     # ヘッダー行
     assert len(df.columns) == 15
@@ -34,8 +32,8 @@ def test_read_mhlw_price():
     assert set(df['区分'].unique()) == set(['内用薬', '注射薬', '外用薬', '歯科用薬剤'])
 
 
-def test_read_mhlw_price_with_file_info():
-    df = jpmed.read_mhlw_price(file_info=True)
+def test_read_price_with_file_info():
+    df = jpmed.read_price(file_info=True)
 
     # ヘッダー行
     assert len(df.columns) == 16
@@ -45,11 +43,37 @@ def test_read_mhlw_price_with_file_info():
     assert df['file'].nunique() == 4
 
 
+@pytest.mark.filterwarnings("ignore:Use `.*_price` instead")
+def test_price_alias():
+    save_dir = Path.home() / '.jp_medicine_master'
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    # read
+    df = jpmed.read_mhlw_price()
+    assert df is not None
+
+    # download
+    filepath = jpmed.download_mhlw_price(save_dir=save_dir)
+    assert filepath
+
+
 #
-# 厚労省 後発医薬品 (mhlw_ge)
+# 厚労省 後発医薬品 (ge)
 #
-def test_read_mhlw_ge():
-    df = jpmed.read_mhlw_ge()
+def test_download_ge_all():
+    save_dir = Path.home() / '.jp_medicine_master'
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    years = jpmed.get_years_ge()
+    for year in years:
+        filepath = jpmed.download_ge(save_dir=save_dir, year=year)
+        assert filepath
+
+
+def test_read_ge():
+    df = jpmed.read_ge()
 
     # ヘッダー行
     assert len(df.columns) == 9
@@ -59,9 +83,24 @@ def test_read_mhlw_ge():
     assert 11_000 <= len(df) <= 15_000
 
 
-def test_read_mhlw_ge_with_file_info():
-    df = jpmed.read_mhlw_ge(file_info=True)
+def test_read_ge_with_file_info():
+    df = jpmed.read_ge(file_info=True)
 
     # ヘッダー行
     assert len(df.columns) == 10
     assert df.columns[-1] == 'file'
+
+
+@pytest.mark.filterwarnings("ignore:Use `.*_ge` instead")
+def test_ge_alias():
+    save_dir = Path.home() / '.jp_medicine_master'
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    # read
+    df = jpmed.read_mhlw_ge()
+    assert df is not None
+
+    # download
+    filepath = jpmed.download_mhlw_ge(save_dir=save_dir)
+    assert filepath

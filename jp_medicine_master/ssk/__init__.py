@@ -2,8 +2,10 @@ from logging import getLogger
 import os
 from pathlib import Path
 from typing import Union, Optional, Dict
+from urllib.parse import urljoin
 
 import pandas as pd
+from typing_extensions import deprecated
 
 from .._ import MasterDownloader
 
@@ -20,6 +22,7 @@ def _get_url_ssk(year: Optional[int] = None, *, verbose: bool = False) -> Union[
         verbose: Trueを指定した場合、リンクの一覧をdictとして返す。
     """
     urls = {
+        2025: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r06/kihonmasta_04.html",
         2024: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r06/kihonmasta_04.html",
         2022: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r04/kihonmasta_04.html",
         2020: "https://www.ssk.or.jp/seikyushiharai/tensuhyo/kihonmasta/r02/kihonmasta_04.html",
@@ -43,8 +46,9 @@ def _get_url_ssk(year: Optional[int] = None, *, verbose: bool = False) -> Union[
 
 
 #
-# メイン関数
+# メイン関数 (ssk_y)
 #
+@deprecated('Use `download_y` instead')
 def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = None, file_info=False, delete_tmp=True) -> str:
     """支払基金HPから、医薬品マスターの一覧ファイルをダウンロードし、csv形式 (UTF-8) で保存する。
 
@@ -61,9 +65,18 @@ def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = N
     url = _get_url_ssk(year=year)
     soup = MasterDownloader.get(url)
 
-    link = soup.select_one('.table01').find('a')
-    base_url = '/'.join(url.split('/')[:-1])
-    download_url = base_url + '/' + link.attrs['href']
+    # 原則、ページ内の最初の table.table01 にあるURLを取得する。
+    # 中間年改訂があった場合、ページ内に複数年度が存在する場合があるので、年度を含むh2タグの直後の table.table01 にあるURLを取得する。
+    h2_texts = {
+        2024: '令和6年度',
+    }
+    if year in h2_texts:
+        h2 = soup.find('h2', string=h2_texts[year])
+        link = h2.find_next('table', class_='table01').find('a')
+        download_url = urljoin(url, link.attrs['href'])
+    else:
+        link = soup.select_one('.table01').find('a')
+        download_url = urljoin(url, link.attrs['href'])
 
     # ファイルの保存
     filepath = MasterDownloader.fetch_file(download_url, save_dir, delete_tmp=delete_tmp)
@@ -83,6 +96,7 @@ def download_ssk_y(save_dir: Union[str, os.PathLike], *, year: Optional[int] = N
     return str(filepath)
 
 
+@deprecated('Use `read_y` instead')
 def read_ssk_y(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.PathLike]] = None, file_info=False) -> pd.DataFrame:
     """支払基金HPから、医薬品マスターを取得する。
 
@@ -98,6 +112,7 @@ def read_ssk_y(*, year: Optional[int] = None, save_dir: Optional[Union[str, os.P
     return MasterDownloader.read(download_ssk_y, year=year, save_dir=save_dir, numeric_cols=numeric_cols, file_info=file_info)
 
 
-def get_years_ssk():
+@deprecated('Use `get_years_y` instead')
+def get_years_ssk_y():
     """`year` に指定できる年度の一覧。"""
     return list(sorted(_get_url_ssk(verbose=True).keys()))
