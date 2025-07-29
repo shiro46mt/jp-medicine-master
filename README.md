@@ -4,45 +4,15 @@
 [![PyPI Downloads](https://static.pepy.tech/badge/jp-medicine-master)](https://pepy.tech/projects/jp-medicine-master)
 
 # jp-medicine-master
-日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ
+日本で使用される医薬品マスターを簡単に取得・利用するためのライブラリ
 
-## 利用可能な医薬品マスタ
-- **レセプト電算処理システム用医薬品マスター**
+## 利用可能な医薬品マスター
+- **レセプト電算処理システム 医薬品マスター** : 2012年度薬価改定～
 
-    対応年度: 2012, 2014, 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 (version>=1.5)
+- **薬価基準収載医薬品** : 2014年度薬価改定～
+- **後発医薬品に関する情報** : 2014年度薬価改定～
 
-    出典: 診療報酬情報提供サービス
-    https://shinryohoshu.mhlw.go.jp/shinryohoshu/
-
-- **薬価基準収載医薬品**
-- **後発医薬品に関する情報**
-
-    対応年度: 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 (version>=1.4)
-
-    出典: 厚生労働省「薬価基準収載品目リスト及び後発医薬品に関する情報について」
-    https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000078916.html
-
-- **AG（オーソライズド・ジェネリック）一覧**
-
-    日経メディカルのHPからAGの一覧を取得し、レセ電システム用医薬品マスターと突合して各種コードを付与したマスタです。(version>=1.4)
-
-    出典: 日経メディカル処方薬事典｜AG（オーソライズドジェネリック）一覧
-    https://medical.nikkeibp.co.jp/inc/all/drugdic/ag/index.html
-
-- **BS（バイオシミラー）一覧**
-
-    後発医薬品に関する情報からBSの一覧を取得し、レセ電システム用医薬品マスターと突合して各種コードを付与したマスタです。(version>=1.4)
-
-    対応年度: 2016, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
-
-
-> [!TIP]
->
-> 最新年度のマスタが取得できない場合、ライブラリのアップデートをお試しください。
-> ```
-> pip install --upgrade jp-medicine-master
-> ```
-> それでも取得できない場合はissueなどでお知らせいただけると非常に光栄です。
+- **HOTコードマスター（HOT13 / HOT9）** : 2001年～
 
 # インストール方法
 ```
@@ -54,82 +24,47 @@ pip install jp-medicine-master
 import jp_medicine_master as jpmed
 ```
 
-各マスタについて、2種類の関数が実装されています。read_xxx系の関数でも、引数save_dirを渡せば DataFrameとして読み込みつつcsvとして保存することも可能です。
-
-* csvとして保存する関数（download_xxx）
-* pandasのDataFrameとして読み込む関数（read_xxx）
-
-以下のマスタでは、引数`year`を指定することで過去のバージョンを取得できます。
-- レセプト電算処理システム用医薬品マスター
-- 薬価基準収載医薬品
-- 後発医薬品に関する情報
-- BS（バイオシミラー）一覧
-
-> [!TIP]
->
-> 2019年度の医薬品マスタは、2019年10月の消費税率引上げによる改定後のマスタです。
-> 2019年9月までのマスタは `year=2018` を参照してください。
-
-
-**レセプト電算処理システム用医薬品マスタ**
+## マスター読み込み
+医薬品マスターをpandasのDataFrameとして読み込みます。引数の仕様は共通です。
 
 ```python
-# csvとして保存する場合
-save_dir = '/path/to/directory'
-filepath = jpmed.download_y(save_dir)
-print(filepath)  # /path/to/directory/y_20250318.csv
+# レセプト電算処理システム 医薬品マスター
+### 引数`date`を指定した場合は、指定日の時点のマスターを取得します。
+df = jpmed.read_y(date='20161231')
 
-# pandasのDataFrameとして読み込む場合
-df = jpmed.read_y()
+# 薬価基準収載医薬品
+### 引数`year`を指定した場合は、指定年度の末日の時点のマスターを取得します。
+df = jpmed.read_price(year='2016')  # 2017年3月31日時点。
+
+# 後発医薬品に関する情報
+### 引数`kaitei`を指定した場合は、指定年度の薬価改定の有効期間の末日の時点のマスターを取得します。※HOTコードマスターは非対応。
+df = jpmed.read_ge(kaitei='2016')  # 2018年3月31日時点。
+df = jpmed.read_ge(kaitei='2018')  # 2019年9月30日時点。※2019年10月に消費税増税に伴う薬価改定があったため。
+
+# HOTコードマスター（HOT13 / HOT9）
+### 引数を指定しない場合は、現時点での最新マスターを取得します。
+df = jpmed.read_hot13()
+df = jpmed.read_hot9()
 ```
 
-**薬価基準収載医薬品**
+## マスターの応用例
+1つ以上の医薬品マスターを加工する使用例を実装しています。引数の仕様はマスター読み込みと同様です。
 
 ```python
-# csvとして保存する場合
-save_dir = '/path/to/directory'
-filepath = jpmed.download_price(save_dir)
-print(filepath)  # /path/to/directory/tp20250401-01.csv
+# レセプト電算処理システム 医薬品マスターを取得します。
+# read_y() との違いとして、年度途中で経過措置期限切れとなった医薬品の情報を含みます。※引数はyearのみ対応。
+df = jpmed.get_y_all(year='2016')
 
-# pandasのDataFrameとして読み込む場合
-df = jpmed.read_price()
+# レセプト電算処理システム 医薬品マスターに、HOTコードマスターを突合してYJコードを付与します。
+df = jpmed.get_y_with_yj()
+
+# レセプト電算処理システム 医薬品マスターに、バイオシミラーに関する情報（BS区分、BS成分名）を付与して該当医薬品のみを抽出します。
+# BSに関する情報は後発医薬品に関する情報から加工しています。
+df = jpmed.get_biosimilar()
 ```
 
-**後発医薬品に関する情報**
-
-```python
-# csvとして保存する場合
-save_dir = '/path/to/directory'
-filepath = jpmed.download_ge(save_dir)
-print(filepath)  # /path/to/directory/tp20250401-01_05.csv
-
-# pandasのDataFrameとして読み込む場合
-df = jpmed.read_ge()
-```
-
-**AG（オーソライズド・ジェネリック）一覧**
-
-```python
-# csvとして保存する場合
-save_dir = '/path/to/directory'
-filepath = jpmed.download_ag(save_dir)
-print(filepath)  # /path/to/directory/AG_20250203.csv
-
-# pandasのDataFrameとして読み込む場合
-df = jpmed.read_ag()
-```
-
-**BS（バイオシミラー）一覧**
-
-```python
-# csvとして保存する場合
-save_dir = '/path/to/directory'
-filepath = jpmed.download_bs(save_dir)
-print(filepath)  # /path/to/directory/BS_20250401.csv
-
-# pandasのDataFrameとして読み込む場合
-df = jpmed.read_bs()
-```
+# データソース
+[jp-medicine-master-data](https://github.com/shiro46mt/jp-medicine-master-data)を参照。
 
 # License
 This software is released under the MIT License, see LICENSE.

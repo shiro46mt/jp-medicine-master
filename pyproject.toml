@@ -17,12 +17,8 @@ classifiers = [
   "Natural Language :: Japanese",
 ]
 dependencies = [
-  "beautifulsoup4",
-  "openpyxl",
   "pandas",
   "requests",
-  "typing-extensions",
-  "xlrd >= 2.0.1",
 ]
 
 [project.urls]
