@@ -47,13 +47,13 @@ def get_y_with_yj(date: Union[int, str, None] = None, year: Union[int, str, None
         .rename(columns={'レセプト電算処理システムコード（１）': '医薬品コード', '個別医薬品コード': 'YJコード'})
         [['医薬品コード', 'YJコード']]
     )
-    df = (
-        y
-        .merge(hot9, how='left')
-        .merge(hot9, how='left', left_on='長期収載品関連', right_on='医薬品コード', suffixes=['', '_選'])  # （選）の製品の対応
-    )
-    df['YJコード'] = df['YJコード'].fillna(df['YJコード_選'])
-    df = df.drop(columns=['医薬品コード_選', 'YJコード_選'])
+    df = y.merge(hot9, how='left')
+
+    # （選）の製品の対応
+    if '長期収載品関連' in df.columns:
+        df = df.merge(hot9, how='left', left_on='長期収載品関連', right_on='医薬品コード', suffixes=['', '_選'])
+        df['YJコード'] = df['YJコード'].fillna(df['YJコード_選'])
+        df = df.drop(columns=['医薬品コード_選', 'YJコード_選'])
 
     return df
 
