@@ -1,0 +1,18 @@
+
+# python cache
+__pycache__
+.pytest_cache
+
+# environments
+env
+venv
+.env
+.venv
+
+# for distribution package
+build
+dist
+*.egg-info
+
+# for test
+test.ipynb
