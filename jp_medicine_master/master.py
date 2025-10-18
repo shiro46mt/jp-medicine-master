@@ -50,8 +50,9 @@ def _select_file(kind: str, date: Union[int, str, None] = None, year: Union[int,
             raise RuntimeError("データカタログが取得できませんでした。インターネットの接続状況を確認して再試行してください。")
 
     # データカタログからファイルの一覧を取得
-    assert kind in data_catalog['data'], f"引数 kind の値が無効です: '{kind}'"
-    files = data_catalog['data'][kind]
+    data_catalog_items = [item for item in data_catalog['data'] if item['id'] == kind]
+    assert len(data_catalog_items) > 0, f"引数 kind の値が無効です: '{kind}'"
+    files = data_catalog_items[0]['files']
 
     # 日付でファイルを指定
     if date:
