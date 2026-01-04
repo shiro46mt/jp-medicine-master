@@ -1,7 +1,7 @@
 [project]
 name = "jp_medicine_master"
 version = "2.0.2"
-description = "日本で使用される医薬品マスタを簡単に取得・利用するためのライブラリ"
+description = "日本で使用される医薬品マスタを簡単に取得・利用するためのpythonライブラリ"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"

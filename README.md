@@ -4,7 +4,7 @@
 [![PyPI Downloads](https://static.pepy.tech/badge/jp-medicine-master)](https://pepy.tech/projects/jp-medicine-master)
 
 # jp-medicine-master
-日本で使用される医薬品マスターを簡単に取得・利用するためのライブラリ
+日本で使用される医薬品マスターを簡単に取得・利用するためのpythonライブラリ
 
 ## 利用可能な医薬品マスター
 - **レセプト電算処理システム 医薬品マスター** : 2012年度薬価改定～
