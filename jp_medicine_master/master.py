@@ -100,7 +100,7 @@ def _read(kind: str, date: Union[int, str, None] = None, year: Union[int, str, N
     if numeric_cols:
         for c in numeric_cols:
             if c in df.columns:
-                df[c] = pd.to_numeric(df[c])
+                df[c] = pd.to_numeric(df[c].str.replace(',', ''))
 
     return df
 
