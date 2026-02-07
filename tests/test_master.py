@@ -52,6 +52,10 @@ def test_read_ge():
     df = jpmed.read_ge()
 
 
+def test_read_ippanmeishohou():
+    df = jpmed.read_ippanmeishohou()
+
+
 def test_read_hot13():
     df = jpmed.read_hot13()
 

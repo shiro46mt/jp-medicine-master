@@ -4,6 +4,7 @@ from .master import (
     read_y,
     read_price,
     read_ge,
+    read_ippanmeishohou,
     read_hot13,
     read_hot9,
 )

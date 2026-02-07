@@ -152,6 +152,20 @@ def read_ge(date: Union[int, str, None] = None, year: Union[int, str, None] = No
     return _read('mhlw_ge', date=date, year=year, kaitei=kaitei, numeric_cols=numeric_cols)
 
 
+def read_ippanmeishohou(date: Union[int, str, None] = None, year: Union[int, str, None] = None, kaitei: Union[int, str, None] = None) -> pd.DataFrame:
+    """処方箋に記載する一般名処方の標準的な記載（一般名処方マスタ）（厚生労働省）を読み込む。
+
+    引数が未指定の場合は利用可能な最新データを読み込む。
+
+    Args:
+        date (yyyymmdd形式): 指定した日付時点での最新データを読み込む。
+        year: 指定した年度の最新データを読み込む。dateを指定した場合は無視される。
+        kaitei: 指定した薬価改定年度の最新データを読み込む。薬価改定、中間年改定のない年度を指定するとエラーになる。date,yearを指定した場合は無視される。
+    """
+    numeric_cols = []
+    return _read('mhlw_ippanmeishohou', date=date, year=year, kaitei=kaitei, numeric_cols=numeric_cols)
+
+
 def read_hot13(date: Union[int, str, None] = None, year: Union[int, str, None] = None) -> pd.DataFrame:
     """HOTコードマスター（HOT13）を読み込む。
 
